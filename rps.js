@@ -1,42 +1,71 @@
-const choices = ["rock", "paper", "scissors"];
-
-const getComputerChoice = () => choices[Math.floor(Math.random() * 3)];
-
 const playGame = () => {
-  const choice = prompt("Choose rock, paper or scissors: ");
-  const CPU = getComputerChoice();
+  let cpuCounter = 0;
+  let playerCounter = 0;
+  let rounds = 5;
+  const CHOICES = ["rock", "paper", "scissors"];
+  const getComputerChoice = () => CHOICES[Math.floor(Math.random() * 3)];
 
-  if (!choices.includes(choice)) {
-    return "Please enter a valid option.";
-  }
-
-  if (choice == CPU) {
-    return "Draw";
-  }
-
-  if (choice == "paper") {
-    if (CPU == "scissors") {
-      return `You loose ${CPU} beats ${choice}`;
-    } else {
-      return `You win ${choice} beats ${CPU}`;
+  const playRound = (playerChoice, cpuChoice, CHOICES) => {
+    if (!CHOICES.includes(playerChoice)) {
+      return "Please enter a valid option.";
     }
+
+    if (playerChoice == cpuChoice) {
+      return "Draw";
+    }
+
+    if (playerChoice == "paper") {
+      if (cpuChoice == "scissors") {
+        console.log(`You loose ${cpuChoice} beats ${playerChoice}`);
+        return "CPU";
+      } else {
+        console.log(`You win ${playerChoice} beats ${cpuChoice}`);
+        return "PLAYER";
+      }
+    }
+
+    if (playerChoice == "rock") {
+      if (cpuChoice == "paper") {
+        console.log(`You loose ${cpuChoice} beats ${playerChoice}`);
+        return "CPU";
+      } else {
+        console.log(`You win ${playerChoice} beats ${cpuChoice}`);
+        return "PLAYER";
+      }
+    }
+
+    if (playerChoice == "scissors") {
+      if (cpuChoice == "rock") {
+        console.log(`You loose ${cpuChoice} beats ${playerChoice}`);
+        return "CPU";
+      } else {
+        console.log(`You win ${playerChoice} beats ${cpuChoice}`);
+        return "PLAYER";
+      }
+    }
+  };
+
+  while (rounds >= 0) {
+    const CPU = getComputerChoice();
+    const PLAYER = prompt("Choose rock, paper or scissors: ");
+    let winner = playRound(PLAYER, CPU, CHOICES);
+
+    if (winner == "CPU") {
+      cpuCounter++;
+    } else if (winner == "PLAYER") {
+      playerCounter++;
+    } else {
+      console.log("DRAW");
+    }
+
+    console.log(`Player: ${playerCounter} | CPU:${cpuCounter}`);
+    rounds--;
   }
 
-  if (choice == "rock") {
-    if (CPU == "paper") {
-      return `You loose ${CPU} beats ${choice}`;
-    } else {
-      return `You win ${choice} beats ${CPU}`;
-    }
+  if (playerCounter == cpuCounter) {
+    return "IT'S A DRAW";
   }
-
-  if (choice == "scissors") {
-    if (CPU == "rock") {
-      return `You loose ${CPU} beats ${choice}`;
-    } else {
-      return `You win ${choice} beats ${CPU}`;
-    }
-  }
+  return playerCounter > cpuCounter ? `YOU WIN THE GAME` : "YOU LOSE THE GAME";
 };
 
 console.log(playGame());
