@@ -1,71 +1,73 @@
-const playGame = () => {
-  let cpuCounter = 0;
-  let playerCounter = 0;
-  let rounds = 5;
-  const CHOICES = ["rock", "paper", "scissors"];
-  const getComputerChoice = () => CHOICES[Math.floor(Math.random() * 3)];
+const btns = document.querySelectorAll("button");
+const results = document.querySelector(".results");
+const cpu_res = document.querySelector(".cpu-choice");
+const score = document.querySelector(".score");
 
-  const playRound = (playerChoice, cpuChoice, CHOICES) => {
-    if (!CHOICES.includes(playerChoice)) {
-      return "Please enter a valid option.";
+const play_game = () => {
+  let player_score = 0;
+  let cpu_score = 0;
+  let games_left = 5;
+
+  const end_game = (p_score, c_score) => {
+    if (p_score > c_score) {
+      score.textContent = "YOU WIN";
+    } else {
+      score.textContent = "YOU LOSE";
     }
 
-    if (playerChoice == cpuChoice) {
-      return "Draw";
-    }
-
-    if (playerChoice == "paper") {
-      if (cpuChoice == "scissors") {
-        console.log(`You loose ${cpuChoice} beats ${playerChoice}`);
-        return "CPU";
-      } else {
-        console.log(`You win ${playerChoice} beats ${cpuChoice}`);
-        return "PLAYER";
-      }
-    }
-
-    if (playerChoice == "rock") {
-      if (cpuChoice == "paper") {
-        console.log(`You loose ${cpuChoice} beats ${playerChoice}`);
-        return "CPU";
-      } else {
-        console.log(`You win ${playerChoice} beats ${cpuChoice}`);
-        return "PLAYER";
-      }
-    }
-
-    if (playerChoice == "scissors") {
-      if (cpuChoice == "rock") {
-        console.log(`You loose ${cpuChoice} beats ${playerChoice}`);
-        return "CPU";
-      } else {
-        console.log(`You win ${playerChoice} beats ${cpuChoice}`);
-        return "PLAYER";
-      }
-    }
+    player_score = 0;
+    cpu_score = 0;
+    games_left = 5;
   };
 
-  while (rounds >= 0) {
-    const CPU = getComputerChoice();
-    const PLAYER = prompt("Choose rock, paper or scissors: ");
-    let winner = playRound(PLAYER, CPU, CHOICES);
+  btns.forEach((btn) => {
+    btn.addEventListener("click", function (e) {
+      const player_choice = e.target.id.replace("player-", "");
+      const res = playRound(player_choice);
+      cpu_res.textContent = res.cpu_choice.toUpperCase();
 
-    if (winner == "CPU") {
-      cpuCounter++;
-    } else if (winner == "PLAYER") {
-      playerCounter++;
-    } else {
-      console.log("DRAW");
-    }
+      if (res.win == "DRAW") {
+        results.textContent = "Draw.";
+      }
 
-    console.log(`Player: ${playerCounter} | CPU:${cpuCounter}`);
-    rounds--;
-  }
+      if (res.win == true) {
+        results.textContent = `You Win: ${res.player_choice} beats ${res.cpu_choice}.`;
+        player_score++;
+        games_left--;
+        score.textContent = `Rounds left: ${games_left}`;
+      }
 
-  if (playerCounter == cpuCounter) {
-    return "IT'S A DRAW";
-  }
-  return playerCounter > cpuCounter ? `YOU WIN THE GAME` : "YOU LOSE THE GAME";
+      if (res.win == false) {
+        results.textContent = `You Lose: ${res.cpu_choice} beats ${res.player_choice}`;
+        cpu_score++;
+        games_left--;
+        score.textContent = `Rounds left: ${games_left}`;
+      }
+
+      if (games_left == 0) {
+        end_game(player_score, cpu_score);
+      }
+    });
+  });
 };
 
-console.log(playGame());
+const CHOICES = ["rock", "paper", "scissors"];
+const getComputerChoice = () => CHOICES[Math.floor(Math.random() * 3)];
+
+const playRound = (player, cpu = getComputerChoice()) => {
+  if (player == cpu) {
+    return { player_choice: player, cpu_choice: cpu, win: "DRAW" };
+  }
+
+  if (
+    (player == "rock" && cpu == "scissors") ||
+    (player == "paper" && cpu == "rock") ||
+    (player == "scissors" && cpu == "paper")
+  ) {
+    return { player_choice: player, cpu_choice: cpu, win: true };
+  }
+
+  return { player_choice: player, cpu_choice: cpu, win: false };
+};
+
+play_game();
